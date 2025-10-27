@@ -1,11 +1,11 @@
-# 🤖 Agile Coach Chatbot — Streamlit + LangChain + GPT-5
+# Agile Coach Chatbot — Streamlit + LangChain + GPT-5
 
 An interactive AI chatbot built using **Streamlit**, **LangChain**, and **OpenAI GPT-5** that acts as an **Agile Coach**.  
 It can answer questions about **Agile methodology**, **Scrum**, **Kanban**, **sprint planning**, and more — while remembering the context of your conversation.
 
 ---
 
-## 🚀 Features
+## Features
 
 ✅ Built with **Streamlit** for an easy-to-use web UI  
 ✅ Uses **LangChain** to manage prompts and message flow  
@@ -15,7 +15,7 @@ It can answer questions about **Agile methodology**, **Scrum**, **Kanban**, **sp
 
 ---
 
-## 🧠 How It Works
+## How It Works
 
 1. The app asks for your **OpenAI API key**.
 2. You type a question related to Agile.
@@ -28,7 +28,7 @@ It can answer questions about **Agile methodology**, **Scrum**, **Kanban**, **sp
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 arya-generativeai-frameworks/
 │
