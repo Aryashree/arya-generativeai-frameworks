@@ -1,0 +1,38 @@
+import os
+from langchain_openai import ChatOpenAI
+import streamlit as st
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.output_parsers import StrOutputParser
+from langchain_community.chat_message_histories import StreamlitChatMessageHistory
+from langchain_core.runnables.history import  RunnableWithMessageHistory
+
+#from travelapp_demo import prompt_template
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+llm = ChatOpenAI(model="gpt-5",api_key=OPENAI_API_KEY)
+prompt_template = ChatPromptTemplate.from_messages(
+    [
+        ("system", "You are a Agile coach. Answer any questions"
+         "related to agile process"
+         "Do not answer any other questions not related to Agile"),
+        MessagesPlaceholder(variable_name="chat_history")
+        ("user", "{input}")
+    ]
+)
+chain = prompt_template | llm
+history_for_chain = StreamlitChatMessageHistory
+chain_with_history = RunnableWithMessageHistory(
+    chain,
+    lambda session_id:history_for_chain,
+    input_message_keys="input",
+    history_messages_key="chat_history")
+
+st.title("Agile Guide")
+
+input = st.text_input("Enter the question:")
+
+
+
+if input:
+    response = chain_with_history.invoke({"input":input},{"configurable":{"session_id":"session-abc123"}})
+    st.write(response.content)
