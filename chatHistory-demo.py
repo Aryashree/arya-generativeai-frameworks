@@ -1,44 +1,61 @@
-import os
-from langchain_openai import ChatOpenAI
 import streamlit as st
+from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.output_parsers import StrOutputParser
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
-from langchain_core.runnables.history import  RunnableWithMessageHistory
+from langchain_core.runnables.history import RunnableWithMessageHistory
 
-#from travelapp_demo import prompt_template
+# Streamlit App Title
+st.title("Agile Guide Chatbot")
 
-# OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+#  Ask user for OpenAI API key
 api_key = st.text_input("Enter your OpenAI API Key", type="password")
 
+# Stop execution until API key is provided
 if not api_key:
-    st.warning("Please enter your OpenAI API key to continue")
+    st.warning("Please enter your OpenAI API key to continue.")
     st.stop()
-llm = ChatOpenAI(model="gpt-5",api_key=api_key)
 
+# initialize OpenAI LLM (GPT-5 model)
+llm = ChatOpenAI(model="gpt-5", api_key=api_key)
 
+# Define the prompt template
 prompt_template = ChatPromptTemplate.from_messages(
     [
-        ("system", "You are an Agile coach. Only answer questions related to agile processes. "
-                   "Do not answer unrelated questions."),
+        (
+            "system",
+            "You are an Agile coach. Only answer questions related to Agile methodology, "
+            "Scrum, Kanban, product ownership, sprint planning, and related agile processes. "
+            "Do not answer unrelated questions.",
+        ),
         MessagesPlaceholder(variable_name="chat_history"),
         ("user", "{input}"),
     ]
 )
-chain = prompt_template | llm
-history_for_chain = StreamlitChatMessageHistory
+
+#Combine prompt → model → parser into one runnable chain
+chain = prompt_template | llm | StrOutputParser()
+
+#Initialize Streamlit chat message history
+history = StreamlitChatMessageHistory()
+
+#Wrap chain with chat history tracking
 chain_with_history = RunnableWithMessageHistory(
     chain,
-    lambda session_id:history_for_chain,
-    input_message_keys="input",
-    history_messages_key="chat_history")
+    lambda session_id: history,  # returns the history instance
+    input_messages_key="input",
+    history_messages_key="chat_history",
+)
 
-st.title("Agile Guide")
+#User Input
+user_input = st.text_input("Ask your Agile question:")
 
-input = st.text_input("Enter the question:")
+#Run when user submits a question
+if user_input:
+    response = chain_with_history.invoke(
+        {"input": user_input},
+        config={"configurable": {"session_id": "session-abc123"}},
+    )
 
-
-
-if input:
-    response = chain_with_history.invoke({"input":input},{"configurable":{"session_id":"session-abc123"}})
-    st.write(response.content)
+    # Display the response
+    st.write(response)
