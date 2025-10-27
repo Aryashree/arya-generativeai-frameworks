@@ -19,11 +19,10 @@ llm = ChatOpenAI(model="gpt-5",api_key=api_key)
 
 prompt_template = ChatPromptTemplate.from_messages(
     [
-        ("system", "You are a Agile coach. Answer any questions"
-         "related to agile process"
-         "Do not answer any other questions not related to Agile"),
-        MessagesPlaceholder(variable_name="chat_history")
-        ("user", "{input}")
+        ("system", "You are an Agile coach. Only answer questions related to agile processes. "
+                   "Do not answer unrelated questions."),
+        MessagesPlaceholder(variable_name="chat_history"),
+        ("user", "{input}"),
     ]
 )
 chain = prompt_template | llm
